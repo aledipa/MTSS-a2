@@ -1,20 +1,7 @@
-// import 'package:encrypt/encrypt_io.dart';
-// import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-// import 'package:alert/alert.dart';
-import 'package:flutter/rendering.dart';
-// import 'package:flutter/services.dart';
 import 'package:flutter_codify/main.dart';
 import 'package:flutter_codify/pages/exporter.dart';
-// import 'dart:io';
-// import 'package:pointycastle/asymmetric/api.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
-// import 'package:crypto/crypto.dart';
-// import 'dart:convert' as ConvertPack;
-// import 'package:cryptography/cryptography.dart' as CryptographyPack;
-//Encoding imports
-
 
   
 class EncryptPage extends StatefulWidget {
@@ -63,30 +50,14 @@ class EncryptPageState extends State<EncryptPage> {
       const encMode = encrypt.AESMode.ecb;
     }
 
-    final key = encrypt.Key.fromUtf8(secretKey); //)H@McQfTjWnZr4t7w!z%C*F-JaNdRgUk
-    // final key = encrypt.Key.fromUtf8(')H@McQfTjWnZr4t7w!z%C*F-JaNdRgUk'); //
+    final key = encrypt.Key.fromUtf8(secretKey);
 
     final iv = encrypt.IV.fromLength(16);
-    print(iv.base64);
 
     final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encMode));
 
     return encrypter.decrypt(encrypt.Encrypted.fromBase64(text), iv: iv);
   }
-
-  // Future<String?> encRSA(String text, String secret_key) async {
-  //   final publicKey = await parseKeyFromFile<RSAPublicKey>('test/public.pem');
-  //   final privKey = await parseKeyFromFile<RSAPrivateKey>('test/private.pem');
-
-  //   final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey, privateKey: privKey));
-
-  //   final encrypted = encrypter.encrypt(text);
-  //   final decrypted = encrypter.decrypt(encrypted);
-
-  //   // print(decrypted); // Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  //   // print(encrypted.base64); // kO9EbgbrSwiq0EYz0aBdljHSC/rci2854Qa+nugbhKjidlezNplsEqOxR+pr1RtICZGAtv0YGevJBaRaHS17eHuj7GXo1CM3PR6pjGxrorcwR5Q7/bVEePESsimMbhHWF+AkDIX4v0CwKx9lgaTBgC8/yJKiLmQkyDCj64J3JSE=
-  //   return encrypted.base64;
-  // }
 
   @override 
   Widget build(BuildContext context) {
@@ -116,8 +87,8 @@ class EncryptPageState extends State<EncryptPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        title: const Text(
-          "Encryption Page",
+        title: Text(
+          "${mainButtonText}ion Page",
         ),
 
       ),
@@ -147,22 +118,26 @@ class EncryptPageState extends State<EncryptPage> {
                             ],
                             isSelected: _isSelected,
                             onPressed: (int index) {
-                              setState(() {
-                                for (int i = 0; i < _isSelected.length; i++) {
-                                  if (i == index) {
-                                    _isSelected[i] = true;
-                                  } else {
-                                    _isSelected[i] = false;
+                              try {
+                                setState(() {
+                                  for (int i = 0; i < _isSelected.length; i++) {
+                                    if (i == index) {
+                                      _isSelected[i] = true;
+                                    } else {
+                                      _isSelected[i] = false;
+                                    }
                                   }
-                                }
-                              });
+                                });
+                              } catch(e) {
+                                Codify.showErrorPage("Encrypt", "${e.runtimeType.toString()} Error", context);
+                              }
+                              
                             },
-                            // region example 1
+                            // Region 1
                             color: const Color(0xFFF5FFFF),
                             selectedColor: const Color(0xFFFFBB55),
                             fillColor: const Color(0xFF848484),
                             renderBorder: false,
-                            // endregion
                           ),
                       ),
                     ),
@@ -186,10 +161,9 @@ class EncryptPageState extends State<EncryptPage> {
                           expands: true,
                           controller: _controller,
                           decoration: const InputDecoration(
-                            // fillColor: Color(0xFFFFBB55),
                             prefixText: "# ",
                             hintText: "Text here...",
-                            contentPadding: EdgeInsets.only(left: 15, right: 15, bottom: 20, top: 45), //.all(15)
+                            contentPadding: EdgeInsets.only(left: 15, right: 15, bottom: 20, top: 45),
                             border: InputBorder.none,
                           ),
                           style: const TextStyle(color: Color(0xFFe3eaea)),
@@ -201,7 +175,13 @@ class EncryptPageState extends State<EncryptPage> {
                     width: 15,
                   ),
                   TextButton(
-                    onPressed: () {print("Encrypt"); print(_controller.text); showExportPage();},
+                    onPressed: () {
+                      try {
+                        showExportPage();
+                      } catch(e) {
+                        Codify.showErrorPage("Encrypt", "${e.runtimeType.toString()} Error", context);
+                      }
+                    },
                     child: Text(
                       "< $mainButtonText >",
                       style: const TextStyle(
@@ -211,7 +191,13 @@ class EncryptPageState extends State<EncryptPage> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {}, //Alert(message: 'I Forgor💀').show(); print("Help");
+                    onPressed: () {
+                      try {
+                        Codify.showManualPage("Encrypt", context);
+                      } catch(e) {
+                        Codify.showErrorPage("Encrypt", "${e.runtimeType.toString()} Error", context);
+                      }
+                    }, //Alert(message: 'I Forgor💀').show(); print("Help");
                     child: const Text(
                       "< ? Help >",
                       style: TextStyle(

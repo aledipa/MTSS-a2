@@ -1,48 +1,125 @@
 import 'package:flutter/material.dart';
-// import 'package:alert/alert.dart'; // Alert(message: 'Test').show();
+import 'package:flutter_codify/infos/manual.dart';
+import 'package:flutter_codify/infos/error.dart';
 import 'package:flutter_codify/pages/encoder.dart';
 import 'package:flutter_codify/pages/formatter.dart';
-import 'dart:developer';
+import 'package:flutter/services.dart';
+import 'Yodo1Mas.dart';
 
-
+// import 'package:google_mobile_ads/google_mobile_ads.dart';   //Currently without ADS :)
 void main() {
   runApp(const Codify());
+  startInitSdk();
+}
+
+void startInitSdk()
+{
+
+  Yodo1Mas.instance.setInterstitialListener((event, message) {
+    switch(event) {
+      case Yodo1Mas.AD_EVENT_OPENED:
+        print('Interstitial AD_EVENT_OPENED');
+        break;
+      case Yodo1Mas.AD_EVENT_ERROR:
+        print('Interstitial AD_EVENT_ERROR' + message);
+        break;
+      case Yodo1Mas.AD_EVENT_CLOSED:
+        print('Interstitial AD_EVENT_CLOSED');
+        break;
+    }
+  });
+
+  Yodo1Mas.instance.setBannerListener((event, message) {
+    switch(event) {
+      case Yodo1Mas.AD_EVENT_OPENED:
+        print('Banner AD_EVENT_OPENED');
+        break;
+      case Yodo1Mas.AD_EVENT_ERROR:
+        print('Banner AD_EVENT_ERROR' + message);
+        break;
+      case Yodo1Mas.AD_EVENT_CLOSED:
+        print('Banner AD_EVENT_CLOSED');
+        break;
+    }
+  });
+  Yodo1Mas.instance.init("yt7FBiKSkL", (successful) {
+
+  });
+
 }
 
 class Codify extends StatelessWidget {
   const Codify({Key? key}) : super(key: key);
 
-  @override 
+  static void showManualPage(String page, context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ManualPage(inputPage: page)),
+    );
+  }
+
+  static void showErrorPage(String page, String error, context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ErrorPage(inputPage: page, inputError: error)),
+    );
+  }
+
+  static void copyToClipboard(String link) {
+    Clipboard.setData(ClipboardData(text: link));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       title: "Codifyer",
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        fontFamily: 'Hermit'
-      ),
+      theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Hermit'),
       home: const HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  void showBannerAds() {
+    Yodo1Mas.instance.showBannerAd();
+  }
+
+  void hideBannerAds() {
+    Yodo1Mas.instance.dismissBannerAd();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void showEncodePage(bool action) {
-      Navigator.push(//pash
-        context, 
-        MaterialPageRoute(builder: (context) => EncodePage(isEncode: action)), //context = self o this
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EncodePage(isEncode: action)),
       );
     }
 
     void showFormatPage(bool action) {
-      Navigator.push(//pash
-        context, 
-        MaterialPageRoute(builder: (context) => FormatPage(isEncode: action)), //context = self o this
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => FormatPage(isEncode: action)),
       );
     }
+
+    showBannerAds();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -52,15 +129,23 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: PageContainer(
-          labelText: "Menu", 
+          labelText: "Menu",
           container: Container(
-            width: 290, 
+            width: 290,
             height: 510,
             child: Column(
-              children: <Widget> [
+              children: <Widget>[
                 const Padding(padding: EdgeInsets.only(top: 95)),
+                // Button to open the encoding page
                 TextButton(
-                  onPressed: () {showEncodePage(true); log("Encrypt");},
+                  onPressed: () {
+                    try {
+                      showEncodePage(true);
+                    } catch (e) {
+                      Codify.showErrorPage(
+                          "Home", "${e.runtimeType.toString()} Error", context);
+                    }
+                  },
                   child: const Text(
                     "< Encrypt >",
                     style: TextStyle(
@@ -69,12 +154,21 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
+                // White space
                 const SizedBox(
                   height: 25,
                   width: 15,
                 ),
+                // Button to open the format selection page
                 TextButton(
-                  onPressed: () {showFormatPage(false); log("Decrypt");},
+                  onPressed: () {
+                    try {
+                      showFormatPage(false);
+                    } catch (e) {
+                      Codify.showErrorPage(
+                          "Home", "${e.runtimeType.toString()} Error", context);
+                    }
+                  },
                   child: const Text(
                     "< Decrypt >",
                     style: TextStyle(
@@ -87,8 +181,16 @@ class HomePage extends StatelessWidget {
                   height: 165,
                   width: 15,
                 ),
+                // Button to get help about this page
                 TextButton(
-                  onPressed: () {}, //Alert(message: 'I Forgor💀').show(); log("Help");
+                  onPressed: () {
+                    try {
+                      Codify.showManualPage("Home", context);
+                    } catch (e) {
+                      Codify.showErrorPage(
+                          "Home", "${e.runtimeType.toString()} Error", context);
+                    }
+                  }, //Alert(message: 'I Forgor💀').show(); log("Help");
                   child: const Text(
                     "< ? Help >",
                     style: TextStyle(
@@ -107,11 +209,18 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// Green large widget box
 class PageContainer extends StatelessWidget {
   final String labelText;
   final Container container;
+  Color borderColor;
 
-  PageContainer({required this.labelText, required this.container});
+  PageContainer(
+      {Key? key,
+      required this.labelText,
+      required this.container,
+      this.borderColor = const Color(0xFF00FF00)})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -119,12 +228,12 @@ class PageContainer extends StatelessWidget {
         Positioned(
           bottom: 0,
           child: Container(
-            width: 290, 
-            height: 495, 
+            width: 290,
+            height: 495,
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF00FF00)),
+              border: Border.all(color: borderColor),
               borderRadius: const BorderRadius.all(Radius.circular(15)),
-          ),
+            ),
           ),
         ),
         Positioned(
@@ -132,12 +241,12 @@ class PageContainer extends StatelessWidget {
           child: SizedBox(
             width: 290,
             child: Text(
-              labelText, 
-              style: const TextStyle(
-                color: Color(0xFF00FF00),
-                backgroundColor: Color(0xFF303030),
+              labelText,
+              style: TextStyle(
+                color: borderColor,
+                backgroundColor: const Color(0xFF303030),
                 fontSize: 35,
-              ), 
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -148,13 +257,16 @@ class PageContainer extends StatelessWidget {
   }
 }
 
+// Multicolor smaller sub-widget box
 class SubContainer extends StatelessWidget {
   final String labelText;
   final Container container;
   final double width = 235; //290-235 = 55/2 = 27.5
   double? height; //230
 
-  SubContainer({Key? key, required this.labelText, required this.container, this.height}) : super(key: key);
+  SubContainer(
+      {Key? key, required this.labelText, required this.container, this.height})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     height ??= 230;
@@ -164,8 +276,8 @@ class SubContainer extends StatelessWidget {
         Positioned(
           bottom: 0,
           child: Container(
-            width: width, 
-            height: height, 
+            width: width,
+            height: height,
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xFFF5FFFF)),
               borderRadius: const BorderRadius.all(Radius.circular(15)),
@@ -173,16 +285,16 @@ class SubContainer extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: height!-20,
+          bottom: height! - 20,
           child: SizedBox(
             width: width,
             child: Text(
-              labelText, 
+              labelText,
               style: const TextStyle(
                 color: Color(0xFFF5FFFF),
                 backgroundColor: Color(0xFF303030),
                 fontSize: 25,
-              ), 
+              ),
               textAlign: TextAlign.center,
             ),
           ),

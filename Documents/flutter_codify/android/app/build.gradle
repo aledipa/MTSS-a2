@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+    flutterVersionCode = '4'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.1.1'
 }
 
 apply plugin: 'com.android.application'
@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -43,11 +43,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.flutter_codify"
-        minSdkVersion 16
-        targetSdkVersion 30
+        applicationId "com.dipasquale_alessandro.flutter_codify"
+        // minSdkVersion 16
+        minSdkVersion 19
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -59,10 +61,36 @@ android {
     }
 }
 
+// ADDED BY ME
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url "https://artifact.bytedance.com/repository/pangle" }
+        maven { url "https://android-sdk.is.com" }
+        maven { url "https://sdk.tapjoy.com/" }
+        // google()
+        // mavenCentral()
+        // maven { url "https://android-sdk.is.com" }
+        // maven { url "https://sdk.tapjoy.com/" }
+    }
+}
+
 flutter {
     source '../..'
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.yodo1.mas:full:4.4.5'
+    // implementation "com.applovin:applovin-sdk:+"
 }
+
+// Repos
+repositories {
+    google()
+    mavenCentral()
+}
+
+// dependencies {
+//     implementation("com.applovin.mediation:yandex-adapter:+")
+// }

@@ -6,7 +6,7 @@
 package it.unipd.mtss;
 
 /**
- * Class to convert integer numbers to Roman numerals 
+ * Class to convert integer numbers to Roman numerals
  */
 public class IntegerToRoman {
     
